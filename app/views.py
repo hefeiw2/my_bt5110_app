@@ -16,7 +16,13 @@ COLUMNS = [
     'issue_date',
     'expire_date'
 ]
-
+COLUMNS2 = [
+    'ship_type',
+    'count',
+    'min',
+    'max',
+    'avg'
+]
 
 def index(request):
     """Shows the main page"""
@@ -73,13 +79,37 @@ def emissions(request, page=1):
 
 def aggregate(request, page=1):
     """Shows the aggregate table page"""
+    msg = None
+    order_by = request.GET.get('order_by', '')
+    order_by = order_by if order_by in COLUMNS2 else 'ship_type'
 
     with connections['default'].cursor() as cursor:
-        cursor.execute('select distinct ship_type, count(*) as count, max(technical_efficiency_number) as max, min(technical_efficiency_number) as min, avg(technical_efficiency_number) as avg from co2emission_reduced group by ship_type')
-        rows = namedtuplefetchall(cursor)   
+        cursor.execute('SELECT COUNT(*) FROM aggregate_value')
+        count = cursor.fetchone()[0]
+        num_pages = (count - 1) // PAGE_SIZE + 1
+        page = clamp(page, 1, num_pages)
+
+        offset = (page - 1) * PAGE_SIZE
+        cursor.execute(f'''
+            SELECT {", ".join(COLUMNS2)}
+            FROM aggregate_value
+            ORDER BY {order_by}
+            OFFSET %s
+            LIMIT %s
+        ''', [offset, PAGE_SIZE])
+        rows = namedtuplefetchall(cursor)
+
+    imo_deleted = request.GET.get('deleted', False)
+    if imo_deleted:
+        msg = f'✔ IMO {imo_deleted} deleted'
+
     context = {
         'nbar': 'aggregate',
-        'rows': rows
+        'page': page,
+        'rows': rows,
+        'num_pages': num_pages,
+        'msg': msg,
+        'order_by': order_by
     }
     return render(request, 'aggregate.html', context)
 
