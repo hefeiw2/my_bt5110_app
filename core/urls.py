@@ -14,4 +14,5 @@ urlpatterns = [
     path('emissions/imo/', app.views.emission_detail, name='emission_detail'),
     path('emissions/imo/<int:imo>', app.views.emission_detail, name='emission_detail'),
     path('admin/', admin.site.urls),
+    path('aggregate/', app.views.aggregate, name='aggregate'),
 ]
