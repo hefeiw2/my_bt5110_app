@@ -11,7 +11,10 @@ PAGE_SIZE = 20
 COLUMNS = [
     'imo',
     'ship_name',
-    'technical_efficiency_number'
+    'technical_efficiency_number',
+    'ship_type',
+    'issue_date',
+    'expire_date'
 ]
 
 
@@ -145,7 +148,7 @@ def emission_detail(request, imo=None):
 
     # Set dates (if present) to iso format, necessary for form
     # We don't use this in class, but you will need it for your project
-    for field in ['doc_issue_date', 'doc_expiry_date']:
+    for field in ['issue_date', 'expiry_date']:
         if initial_values.get(field, None) is not None:
             initial_values[field] = initial_values[field].isoformat()
 
