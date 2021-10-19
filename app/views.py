@@ -71,6 +71,18 @@ def emissions(request, page=1):
     }
     return render(request, 'emissions.html', context)
 
+def aggregate(request, page=1):
+    """Shows the aggregate table page"""
+
+
+    with connections['default'].cursor() as cursor:
+        cursor.execute('select distinct ship_type, count(*) as count, max(technical_efficiency_number) as max, min(technical_efficiency_number) as min, avg(technical_efficiency_number) as avg from co2emission_reduced group by ship_type')
+       
+    context = {
+        'nbar': 'aggregate'
+    }
+    return render(request, 'aggregate.html', context)
+
 
 def insert_update_values(form, post, action, imo):
     """
