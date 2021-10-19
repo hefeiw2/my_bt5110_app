@@ -20,6 +20,13 @@
           <th class="ordering" onclick="window.location='/aggregate/?order_by=avg'">Average</th>
         </tr>
       </thead>
+       {% for row in rows %}
+        <tr style="cursor:pointer;" onclick="window.location='/aggregate/ship_type/{{ row.ship_type }}'">
+          {% for val in row %}
+          <td>{{ val|default:'' }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
     </table>
   </div>
 </div>
