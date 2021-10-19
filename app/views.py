@@ -74,12 +74,12 @@ def emissions(request, page=1):
 def aggregate(request, page=1):
     """Shows the aggregate table page"""
 
-
     with connections['default'].cursor() as cursor:
         cursor.execute('select distinct ship_type, count(*) as count, max(technical_efficiency_number) as max, min(technical_efficiency_number) as min, avg(technical_efficiency_number) as avg from co2emission_reduced group by ship_type')
-       
+        rows = namedtuplefetchall(cursor)   
     context = {
-        'nbar': 'aggregate'
+        'nbar': 'aggregate',
+        'rows': rows
     }
     return render(request, 'aggregate.html', context)
 
