@@ -113,6 +113,16 @@ def aggregate(request, page=1):
     }
     return render(request, 'aggregate.html', context)
 
+def visual(request, page=1):
+    labels=[]
+    data=[]
+    with connections['default'].cursor() as cursor:
+        cursor.execute('SELECT ship_type, COUNT(DISTINCT(imo, ship_name)), MIN(technical_efficiency_number), AVG(technical_efficiency_number), MAX(technical_efficiency_number) FROM co2emission_reduced GROUP BY ship_type')
+        queryset=cursor.fetchall()
+    for i in queryset:
+        labels.append(i[0])
+        data.append(i[1])
+    return render(request, 'visual.html', {'labels':labels, 'data':data})
 
 def insert_update_values(form, post, action, imo):
     """
